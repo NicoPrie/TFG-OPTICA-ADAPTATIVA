@@ -1,0 +1,41 @@
+v=readmatrix('verticesESPvertical.txt');
+
+a1t=[linspace(0,90,20),90*ones(1,20)];
+%a1t=0*a1t;
+a2t=[zeros(1,20),linspace(0,20,20)];
+a2t=0*a2t;
+a3t=[linspace(0,20,40)];
+a3t=0*a3t;
+
+Rx=[1,0,0;0,cosd(90),-sind(90);0,sind(90),cosd(90)];
+v=Rx*v;
+figure
+
+for i=1:length(a1t)
+    a1=a1t(i);
+    a2=a2t(i);
+    a3=a3t(i);
+    
+    Rx=[1,0,0;0,cosd(a1),-sind(a1);0,sind(a1),cosd(a1)];
+    Ry=[cosd(a2),0,sind(a2);0,1,0;-sind(a2),0,cosd(a2)];
+    Rz=[cosd(a3),-sind(a3),0;sind(a3),cosd(a3),0;0,0,1];
+
+    %vi=Rx*Ry'*v;
+    vi=Ry'*Rx*v;
+
+    plot3(0,0,0)
+    hold on
+    patch(vi(1,:),vi(2,:),vi(3,:),[0.8 0.8 0.9])
+    axis equal
+
+    xlim([-1,1])
+    ylim([-1,1])
+    zlim([-1,1])
+
+    xlabel('x')
+    ylabel('y')
+    zlabel('z')
+    hold off
+
+    pause(0.1)
+end

@@ -1,0 +1,27 @@
+%Resolucion de EDO
+%Definicion de los parámetros de la planta.
+J=100; %Inertia
+D=10; %Damping
+K=0; %Stiffness
+
+%Definición de la EDO
+A=[0,1;-K/J,-D/J];
+B=[0;1/J];
+nu=0;
+T=1000;
+
+tic
+ode_fun1=@(t,X) A*X + B*(T+nu);
+ode_fun2=@(t,X) A*X + B*(0+nu);
+toc
+
+%Solución
+tiempoTorque=2;
+[t1,X1]=ode45(ode_fun1, 0:0.1:, [0;0]);
+[t2,X2]=ode45(ode_fun2,0:0.1:40,[X1(end,:)]);
+
+dibujarEspejo([t1;t2+b],0*[X1;X2],[X1;X2])
+
+figure
+plot([t1;t2+b],[X1;X2])
+legend('Posición','Velocidad')
