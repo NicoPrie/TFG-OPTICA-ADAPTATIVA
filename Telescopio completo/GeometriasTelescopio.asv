@@ -1,63 +1,67 @@
-%r=0.05;
-a=1.32/2;%Apotema de los hexágonos (m): jwst.
-r=a*2/sqrt(3);%Radio de los hexágonos (m).
+r=8.5;%Radio de los espejos (m): ref. Giant Magellan Telescope (GMT)
 %f=131.4;%Distancia focal del espejo completo.
-f=3;
+f=300; %(GMT) -> 18
 t1=linspace(0,2*pi,7); t1(end)=[]; %Primer círculo de espejos
-t2=linspace(0+2*pi/12,2*pi+2*pi/12,7); t2(end)=[];
-t3=linspace(0,2*pi,7); t3(end)=[];
-rESP0=[zeros(length(t1),3);zeros(length(t2),3);zeros(length(t3),3)];
+t2=linspace(0,2*pi,13); t2(end)=[];
+t2=linspace(0,2*pi,13); t2(end)=[];
+rESP0=[zeros(length(t1),3)];
 
 draw=true;
+capas=2;
 
-x=@(r,k) r*cos(2*pi*k/6);
-y=@(r,k) r*sin(2*pi*k/6);
-v=[[x(r,0);y(r,0);0],[x(r,1);y(r,1);0],[x(r,2);y(r,2);0],[x(r,3);y(r,3);0],[x(r,4);y(r,4);0],[x(r,5);y(r,5);0]];
-%v=[[x(r,0);0;y(r,0)],[x(r,1);0;y(r,1)],[x(r,2);0;y(r,2)],[x(r,3);0;y(r,3)],[x(r,4);0;y(r,4)],[x(r,5);0;y(r,5)]];
+k=linspace(0,2*pi,50);
+x=@(r,theta) r*cos(theta);
+y=@(r,theta) r*sin(theta);
+%v=[[x(r,0);y(r,0);0],[x(r,1);y(r,1);0],[x(r,2);y(r,2);0],[x(r,3);y(r,3);0],[x(r,4);y(r,4);0],[x(r,5);y(r,5);0]];
+v=[x(r,k);0*k;y(r,k)];
 
 if draw
     figure
     plot3(0,0,0)
     hold on
-end
-%patch(v(1,:),v(2,:),v(3,:),[0.8 0.8 0.9])
 
-for i=1:length(t1)
-    ri=[2*a*sin(t1(i)),(2*a)^2/(4*f),2*a*cos(t1(i))];
-    rESP0(i,:)=ri;
-    vi=v+ri';
-    if draw
-        patch(vi(1,:),vi(2,:),vi(3,:),[0.8 0.8 0.9])
-    end
-end
-
-for i=1:length(t2)
-    ri=[3*r*sin(t2(i)),(3*r)^2/(4*f),3*r*cos(t2(i))];
-    rESP0(length(t1)+i,:)=ri;
-    vi=v+ri';
-    if draw
-        patch(vi(1,:),vi(2,:),vi(3,:),[0.8 0.8 0.9])
-    end
-end
-
-for i=1:length(t3)
-    ri=[4*a*sin(t3(i)),(4*a)^2/(4*f),4*a*cos(t3(i))];
-    rESP0(length(t1)+length(t2)+i,:)=ri;
-    vi=v+ri';
-    if draw
-        patch(vi(1,:),vi(2,:),vi(3,:),[0.8 0.8 0.9])
-    end
-end
-
-if draw
     axis equal
-    xlim([-3,3])
-    ylim([-3,3])
-    zlim([-3,3])
+    xlim([-(capas+1)*2*r,(capas+1)*2*r])
+    ylim([-(capas+1)*2*r,(capas+1)*2*r])
+    zlim([-(capas+1)*2*r,(capas+1)*2*r])
 
     xlabel('x')
     ylabel('y')
     zlabel('z')
+    pause(0.5)
+end
+
+patch(v(1,:),v(2,:),v(3,:),[0.8 0.8 0.9])
+pause(0.5)
+
+for i=1:length(t1)
+    ri=[2*r*sin(t1(i)),(r)^2/(f),2*r*cos(t1(i))];
+    rESP0(i,:)=ri;
+    vi=v+ri';
+    if draw
+        patch(vi(1,:),vi(2,:),vi(3,:),[0.8 0.8 0.9])
+        pause(0.5)
+    end
+end
+
+for i=1:length(t2)
+    ri=[2*2*r*sin(t2(i)),(r)^2/(f),2*2*r*cos(t2(i))];
+    rESP0(length(t1)+i,:)=ri;
+    vi=v+ri';
+    if draw
+        patch(vi(1,:),vi(2,:),vi(3,:),[0.8 0.8 0.9])
+        pause(0.5)
+    end
+end
+
+for i=1:length(t3)
+    ri=[2*2*r*sin(t3(i)),(r)^2/(f),2*2*r*cos(t3(i))];
+    rESP0(length(t1)+length(t2)+i,:)=ri;
+    vi=v+ri';
+    if draw
+        patch(vi(1,:),vi(2,:),vi(3,:),[0.8 0.8 0.9])
+        pause(0.5)
+    end
 end
 
 rESP0=[0,f,0;rESP0];
@@ -65,4 +69,4 @@ rESP0=[0,f,0;rESP0];
 clearvars -except rESP0 v
 
 writematrix(rESP0,'coordenadasESP') %[Coordenadas del foco; Coordenadas de los espejos]
-writematrix(v,'verticesESPvertic') %Coordenadas de los vertices de un hexagono centrado en [0,0,0]
+writematrix(v,'verticesESPvertical') %Coordenadas de los vertices de un hexagono centrado en [0,0,0]
