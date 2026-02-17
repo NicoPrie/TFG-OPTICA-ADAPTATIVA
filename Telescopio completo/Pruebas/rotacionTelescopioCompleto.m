@@ -23,6 +23,7 @@ for i=1:length(Alt)
     plot3(rESP(1,1),rESP(1,2),rESP(1,3),'b.')
     hold on
     %plot3(rESP(2:end,1),rESP(2:end,2),rESP(2:end,3),'r*')
+    plot3(rESP(1,1),rESP(1,2),rESP(1,3),'r*')
     for j=2:length(rESP)
         vr=Rz'*Rx*v;
         patch(vr(1,:)+rESP(j,1),vr(2,:)+rESP(j,2),vr(3,:)+rESP(j,3),[0.8 0.8 0.9])
@@ -30,9 +31,9 @@ for i=1:length(Alt)
     hold off
     axis equal
     
-    xlim([-6,6])
-    ylim([-6,6])
-    zlim([-6,6])
+    xlim([-3,3])
+    ylim([-3,3])
+    zlim([-3,3])
 
     xlabel('x')
     ylabel('y')
