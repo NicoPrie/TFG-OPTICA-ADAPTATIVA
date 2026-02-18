@@ -1,13 +1,24 @@
-r=8.5;%Radio de los espejos (m): ref. Giant Magellan Telescope (GMT)
-%f=131.4;%Distancia focal del espejo completo.
-f=300; %(GMT) -> 18
-t1=linspace(0,2*pi,7); t1(end)=[]; %Primer círculo de espejos
-t2=linspace(0,2*pi,13); t2(end)=[];
-t2=linspace(0,2*pi,13); t2(end)=[];
-rESP0=[zeros(length(t1),3)];
-
+capas=15;
 draw=true;
-capas=2;
+
+rt=2.560/2;%Radio del espejo principal (m): ref. Nordic Optical Telescope (NOT) -> 2.560 m
+r=rt/(capas*2+1);%
+%f=131.4;%Distancia focal del espejo completo.
+f=1.5; %(NOT) -> 5.12 m
+t=@(capas) linspace(0,2*pi,capas*6+1); %Coloca posiciones para n espejos en 2pi radianes
+
+T={}; %Cell array donde cada elemento es un vector de radianes donde colocaremos cada fila de espejos
+for i=1:capas
+    T{end+1}=t(i);
+    T{end}(end)=[]; %Elimina el ultimo elemento redundante (T(1)=T(end))
+end
+
+
+rESP0=[zeros(3*capas*(capas+1),3)];
+
+if 3*capas*(capas+1)>2500
+    input("Nº de espejos:" + 3*capas*(capas+1) + ", continuar? ")
+end
 
 k=linspace(0,2*pi,50);
 x=@(r,theta) r*cos(theta);
@@ -28,45 +39,29 @@ if draw
     xlabel('x')
     ylabel('y')
     zlabel('z')
-    pause(0.5)
+    patch(v(1,:),v(2,:),v(3,:),[0.8 0.8 0.9])
+
+    title("Nº Capas:" + capas + " Nº Espejos:" + 3*capas*(capas+1))
+    annotation('textbox', [0.7, 0.5, 0.7, 0.1], 'String', {"PARAMETROS DEL ESPEJO","Distancia focal: " + f + "m", "Diametro del espejo: " + rt*2 + "m"}, 'FitBoxToText', 'on');
 end
 
-patch(v(1,:),v(2,:),v(3,:),[0.8 0.8 0.9])
-pause(0.5)
-
-for i=1:length(t1)
-    ri=[2*r*sin(t1(i)),(r)^2/(f),2*r*cos(t1(i))];
-    rESP0(i,:)=ri;
-    vi=v+ri';
-    if draw
-        patch(vi(1,:),vi(2,:),vi(3,:),[0.8 0.8 0.9])
-        pause(0.5)
+k=0; %Guarda cuantos objetos habia en las capas anteriores
+for i=1:capas
+    for j=1:length(T{i})
+        rj=[i*2*r*sin(T{i}(j)),(i*2*r)^2/(4*f),i*2*r*cos(T{i}(j))];
+        rESP0(k+j,:)=rj; %Añade a la lista de posiciones despues de los k anteriores elementos
+        vj=v+rj';
+        if draw
+            patch(vj(1,:),vj(2,:),vj(3,:),[0.8 0.8 0.9])
+        end
     end
+    k=k+6*i; %Actualiza k con el numero de elementos de la capa
 end
 
-for i=1:length(t2)
-    ri=[2*2*r*sin(t2(i)),(r)^2/(f),2*2*r*cos(t2(i))];
-    rESP0(length(t1)+i,:)=ri;
-    vi=v+ri';
-    if draw
-        patch(vi(1,:),vi(2,:),vi(3,:),[0.8 0.8 0.9])
-        pause(0.5)
-    end
-end
-
-for i=1:length(t3)
-    ri=[2*2*r*sin(t3(i)),(r)^2/(f),2*2*r*cos(t3(i))];
-    rESP0(length(t1)+length(t2)+i,:)=ri;
-    vi=v+ri';
-    if draw
-        patch(vi(1,:),vi(2,:),vi(3,:),[0.8 0.8 0.9])
-        pause(0.5)
-    end
-end
-
-rESP0=[0,f,0;rESP0];
+view(180,0)
+rESP0=[0,f,0;0,0,0;rESP0];
 
 clearvars -except rESP0 v
 
-writematrix(rESP0,'coordenadasESP') %[Coordenadas del foco; Coordenadas de los espejos]
-writematrix(v,'verticesESPvertical') %Coordenadas de los vertices de un hexagono centrado en [0,0,0]
+writematrix(rESP0,'Telescopio completo\coordenadasESP') %[Coordenadas del foco; Coordenadas de los espejos]
+writematrix(v,'Telescopio completo\verticesESPvertical') %Coordenadas de los vertices de un hexagono centrado en [0,0,0]

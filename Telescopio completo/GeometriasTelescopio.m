@@ -1,16 +1,24 @@
-capas=4; %1-4
-draw=false;
+capas=15;
+draw=true;
 
-rt=2.560;%Radio del espejo principal (m): ref. Nordic Optical Telescope (NOT) -> 2.560 m
+rt=2.560/2;%Radio del espejo principal (m): ref. Nordic Optical Telescope (NOT) -> 2.560 m
 r=rt/(capas*2+1);%
 %f=131.4;%Distancia focal del espejo completo.
 f=5.12; %(NOT) -> 5.12 m
-t=@(capas) linspace(0,2*pi,capas*6+1);
-t1=t(1); t1(end)=[]; %Primer círculo de espejos
-t2=t(2); t2(end)=[];
-t3=t(3); t3(end)=[];
-t4=t(4); t4(end)=[];
-rESP0=[zeros(length(t1),3)];
+t=@(capas) linspace(0,2*pi,capas*6+1); %Coloca posiciones para n espejos en 2pi radianes
+
+T={}; %Cell array donde cada elemento es un vector de radianes donde colocaremos cada fila de espejos
+for i=1:capas
+    T{end+1}=t(i);
+    T{end}(end)=[]; %Elimina el ultimo elemento redundante (T(1)=T(end))
+end
+
+
+rESP0=[zeros(3*capas*(capas+1),3)];
+
+if 3*capas*(capas+1)>2500
+    input("Nº de espejos:" + 3*capas*(capas+1) + ", continuar? ")
+end
 
 k=linspace(0,2*pi,50);
 x=@(r,theta) r*cos(theta);
@@ -32,50 +40,25 @@ if draw
     ylabel('y')
     zlabel('z')
     patch(v(1,:),v(2,:),v(3,:),[0.8 0.8 0.9])
+
+    title("Nº Capas:" + capas + " Nº Espejos:" + 3*capas*(capas+1))
+    annotation('textbox', [0.8, 0.5, 0.7, 0.1], 'String', {"PARAMETROS DEL ESPEJO","Distancia focal: " + f + "m", "Diametro del espejo: " + rt*2 + "m"}, 'FitBoxToText', 'on');
 end
 
-for i=1:length(t1)
-    ri=[2*r*sin(t1(i)),(2*r)^2/(4*f),2*r*cos(t1(i))];
-    rESP0(i,:)=ri;
-    vi=v+ri';
-    if draw
-        patch(vi(1,:),vi(2,:),vi(3,:),[0.8 0.8 0.9])
-    end
-end
-
-if capas>=2
-    for i=1:length(t2)
-        ri=[2*2*r*sin(t2(i)),(2*2*r)^2/(4*f),2*2*r*cos(t2(i))];
-        rESP0(length(t1)+i,:)=ri;
-        vi=v+ri';
+k=0; %Guarda cuantos objetos habia en las capas anteriores
+for i=1:capas
+    for j=1:length(T{i})
+        rj=[i*2*r*sin(T{i}(j)),(i*2*r)^2/(4*f),i*2*r*cos(T{i}(j))];
+        rESP0(k+j,:)=rj; %Añade a la lista de posiciones despues de los k anteriores elementos
+        vj=v+rj';
         if draw
-            patch(vi(1,:),vi(2,:),vi(3,:),[0.8 0.8 0.9])
+            patch(vj(1,:),vj(2,:),vj(3,:),[0.8 0.8 0.9])
         end
     end
+    k=k+6*i; %Actualiza k con el numero de elementos de la capa
 end
 
-if capas>=3
-    for i=1:length(t3)
-        ri=[3*2*r*sin(t3(i)),(3*2*r)^2/(4*f),3*2*r*cos(t3(i))];
-        rESP0(length(t1)+length(t2)+i,:)=ri;
-        vi=v+ri';
-        if draw
-            patch(vi(1,:),vi(2,:),vi(3,:),[0.8 0.8 0.9])
-        end
-    end
-end
-
-if capas>=4
-    for i=1:length(t4)
-        ri=[4*2*r*sin(t4(i)),(4*2*r)^2/(4*f),4*2*r*cos(t4(i))];
-        rESP0(length(t4)+length(t4)+length(t4)+i,:)=ri;
-        vi=v+ri';
-        if draw
-            patch(vi(1,:),vi(2,:),vi(3,:),[0.8 0.8 0.9])
-        end
-    end
-end
-
+view(0,0)
 rESP0=[0,f,0;0,0,0;rESP0];
 
 clearvars -except rESP0 v
