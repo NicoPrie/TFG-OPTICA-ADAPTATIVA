@@ -28,15 +28,15 @@ for i=1:length(tiempo)
     
     %Parámetros del PID
     Kp=8;
-    Kd=0.001;
-    Ki=80;
+    Ki=0.001;
+    Kd=80;
 
     %Cálculo del torque en el ángulo altitud.
-    PIDDataAlt=[AltAzEsp(1),Kp,Kd,Ki,PIDDataAlt(5),PIDDataAlt(6)];
+    PIDDataAlt=[AltAzEsp(1),Kp,Ki,Kd,PIDDataAlt(5),PIDDataAlt(6)];
     [TAlt,PIDDataAlt] = calcularPID(PIDDataAlt,AltPos(1),PIDstep,20000000);
 
     %Cálculo del torque en el ángulo acimutal.
-    PIDDataAz=[AltAzEsp(2),Kp,Kd,Ki,PIDDataAz(5),PIDDataAz(6)];
+    PIDDataAz=[AltAzEsp(2),Kp,Ki,Kd,PIDDataAz(5),PIDDataAz(6)];
     [TAz,PIDDataAz] = calcularPID(PIDDataAz,AzPos(1),PIDstep,20000000);
 
     saveT=[saveT; TAlt, TAz];

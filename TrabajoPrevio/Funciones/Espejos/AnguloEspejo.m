@@ -13,7 +13,7 @@ y=cosd(alpha_s) * cosd(gamma_s);
 z=sind(alpha_s);
 S_i=[x,y,z];
 
-S_n=(S_r+S_i)/norm(S_r+S_i); %Como los vectores de los rayos incidente y reflejado son unitarios, el vector bisectriz se calucla de esta manera.
+S_n=(S_r+S_i)/norm(S_r+S_i); %Como los vectores de los rayos incidente y reflejado son unitarios, el vector bisectriz se calcula de esta manera.
 
 
 Az=atan2d(S_n(1),S_n(2));
