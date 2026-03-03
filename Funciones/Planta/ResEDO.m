@@ -25,7 +25,7 @@ tiempoTorque=2;
 figure
 plot([t1;t2+tiempoTorque],[0*[X1;X2],[X1;X2]])
 
-dibujarEspejo([t1;t2+tiempoTorque],[0*[X1;X2],[X1;X2]])
+dibujarEspejo_v2([t1;t2+tiempoTorque],[0*[X1;X2],[X1;X2]])
 
 figure
 plot([t1;t2+tiempoTorque],[X1;X2])

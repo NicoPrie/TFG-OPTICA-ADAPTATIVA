@@ -1,10 +1,10 @@
-capas=15;
+capas=3;
 draw=true;
 
 rt=2.560/2;%Radio del espejo principal (m): ref. Nordic Optical Telescope (NOT) -> 2.560 m
 r=rt/(capas*2+1);%
 %f=131.4;%Distancia focal del espejo completo.
-f=1.5; %(NOT) -> 5.12 m
+f=5.12; %(NOT) -> 5.12 m
 t=@(capas) linspace(0,2*pi,capas*6+1); %Coloca posiciones para n espejos en 2pi radianes
 
 T={}; %Cell array donde cada elemento es un vector de radianes donde colocaremos cada fila de espejos
@@ -42,7 +42,7 @@ if draw
     patch(v(1,:),v(2,:),v(3,:),[0.8 0.8 0.9])
 
     title("Nº Capas:" + capas + " Nº Espejos:" + 3*capas*(capas+1))
-    annotation('textbox', [0.7, 0.5, 0.7, 0.1], 'String', {"PARAMETROS DEL ESPEJO","Distancia focal: " + f + "m", "Diametro del espejo: " + rt*2 + "m"}, 'FitBoxToText', 'on');
+    annotation('textbox', [0.77, 0.5, 0.7, 0.1], 'String', {"PARAMETROS DEL ESPEJO","Distancia focal: " + f + "m", "Diametro del espejo: " + rt*2 + "m", "Diametro por segmento:" + rt/(capas*2+1)}, 'FitBoxToText', 'on');
 end
 
 k=0; %Guarda cuantos objetos habia en las capas anteriores
@@ -58,7 +58,7 @@ for i=1:capas
     k=k+6*i; %Actualiza k con el numero de elementos de la capa
 end
 
-view(180,0)
+view(0,0)
 rESP0=[0,f,0;0,0,0;rESP0];
 
 clearvars -except rESP0 v

@@ -22,7 +22,7 @@ saveAltAz=[];
 
 for i=1:length(tiempo)
     %Obtenemos el ángulo objetivo.
-    met='step';
+    met="step";
     [AltAzEsp]=posObj(tiempo(i),tiempo(end),met);
     clearvars temp
     
