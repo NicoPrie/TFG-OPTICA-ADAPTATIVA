@@ -6,7 +6,7 @@ rESP0=readmatrix("Telescopio completo\Datos\coordenadasESP.txt"); %[Coordenadas 
 v=readmatrix("Telescopio completo\Datos\verticesESPvertical.txt"); % Vertices para dibujar el segmento [xi;yi;zi]
 
 %Definimos el tiempo total de simulación.
-tfin=5; %Segundo final de la simulación.
+tfin=75; %Segundo final de la simulación.
 PIDstep=1/100; %Periodo de tiempo entre ejecuciones del PID
 tiempo=0:PIDstep:tfin; %Tiempos en los que se calculan los PID
 
@@ -19,9 +19,9 @@ end
 
 %Calculamos primero las posiciones del ESPEJO COMPLETO para cada instante
 %de tiempo. Guardamos las posiciones angulares para cada paso de tiempo.
-[t, AltAz]=SimPID(tiempo,AltAzSol);
+[t, AltAzESP]=SimPID(tiempo,AltAzSol,"viento",true);
 disp(size(t))
-disp(size(AltAz))
+disp(size(AltAzESP))
 
 %A partir de las posiciones del ESPEJO COMPLETO traducimos las coordenadas
 %angulares objetivo al sistema de referencia propio de los SEGMENTOS. Los
@@ -33,27 +33,37 @@ for i=1:length(t)
     [~, AltAzSolt(i,:)]=AngFCordT([40.437271,-3.714715],[0,0,0],[0,0,0],[2025, 12, 12+t(i)/(60*60)]);
 end
 
-AltAzSol_SisSegm=AltAzSolt-[AltAz(:,1),AltAz(:,3)];
-plot(AltAzSol_SisSegm)
+AltAzSol_SisSegm=AltAzSolt-[AltAzESP(:,1),AltAzESP(:,3)];
+% plot(AltAzSol_SisSegm)
 
 %Ejercemos control sobre cada uno de los SEGMENTOS y guardamos su posición
 %para cada paso de tiempo.
 AltAzSeg=[];
+AngEspSeg=[];
 for i=2:length(rESP0)
     AngEsp=zeros(length(t),2);
     for j=1:length(t)
         [Az,El] = AnguloEspejo(rESP0(i,:)',rESP0(1,:),AltAzSol_SisSegm(j,1),AltAzSol_SisSegm(j,2));
         AngEsp(j,:)=[Az,El];
     end
-    [t, AltAz]=SimPID(t,AngEsp,planta="seg");
-    AltAzSeg(:,:,i)=AltAz;
+    [tSeg, AltAz]=SimPID(t,AngEsp,planta="seg", limT=100);
+    AngEspSeg(:,:,i-1)=AngEsp;
+    AltAzSeg(:,:,i-1)=AltAz;
 end
 
+%%
 %Dibujamos la evolución del ESPEJO COMPLETO y SEGMENTOS.
+% figure
+% plot(tiempo,AltAzSol)
+% hold on
+% plot(t, [AltAzESP(:,1),AltAzESP(:,3)])
+
 figure
-plot(tiempo,AltAzSol)
 hold on
-plot(t, [AltAz(:,1),AltAz(:,3)])
+for i=1:7
+plot(t,AngEspSeg(:,:,i),'--')
+plot(tSeg, [AltAzSeg(:,1,i), AltAzSeg(:,3,i)])
+end
 
 % %Reducir datos
 % fps=60;

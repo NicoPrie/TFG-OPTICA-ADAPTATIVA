@@ -1,4 +1,4 @@
-capas=2;
+capas=1;
 draw=true;
 
 rt=2.560/2;%Radio del espejo principal (m): ref. Nordic Optical Telescope (NOT) -> 2.560 m
@@ -63,5 +63,5 @@ rESP0=[0,f,0;0,0,0;rESP0];
 
 clearvars -except rESP0 v
 
-writematrix(rESP0,'Telescopio completo\coordenadasESP') %[Coordenadas del foco; Coordenadas de los espejos]
-writematrix(v,'Telescopio completo\verticesESPvertical') %Coordenadas de los vertices de un hexagono centrado en [0,0,0]
+writematrix(rESP0,'Telescopio completo\Datos\coordenadasESP') %[Coordenadas del foco; Coordenadas de los espejos]
+writematrix(v,'Telescopio completo\Datos\verticesESPvertical') %Coordenadas de los vertices de un hexagono centrado en [0,0,0]
