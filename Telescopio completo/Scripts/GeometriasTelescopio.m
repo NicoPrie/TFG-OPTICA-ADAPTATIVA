@@ -1,10 +1,10 @@
-capas=1;
+capas=2;
 draw=true;
 
 rt=2.560/2;%Radio del espejo principal (m): ref. Nordic Optical Telescope (NOT) -> 2.560 m
 r=rt/(capas*2+1);%
-%f=131.4;%Distancia focal del espejo completo.
-f=5.12; %(NOT) -> 5.12 m
+f=1;%Distancia focal del espejo completo.
+%f=5.12; %(NOT) -> 5.12 m
 t=@(capas) linspace(0,2*pi,capas*6+1); %Coloca posiciones para n espejos en 2pi radianes
 
 T={}; %Cell array donde cada elemento es un vector de radianes donde colocaremos cada fila de espejos

@@ -1,4 +1,12 @@
-function [output,PIDData] =calcularPID(PIDData,angRN,dt,Tmax)
+function [output,PIDData] =calcularPID(PIDData,angRN,dt,Tmax,anglim)
+arguments (Input)
+    PIDData 
+    angRN 
+    dt 
+    Tmax
+    anglim=[]
+end
+
 %PIDData=[angREF,Kp,Ki,Kd,last_error,integral]
 angREF = PIDData(1);
 Kp = PIDData(2);
@@ -6,7 +14,15 @@ Ki = PIDData(3);
 Kd = PIDData(4);
 last_error = PIDData(5);
 integral = PIDData(6);
-%jajaj
+
+if length(anglim) ~= 0
+    if angREF<anglim(1)
+        angREF=anglim(1);
+    elseif angREF> anglim(2)
+        angREF=anglim(2);
+    end
+end
+
 
 %Calculamos el error:
 error=angREF-angRN;
