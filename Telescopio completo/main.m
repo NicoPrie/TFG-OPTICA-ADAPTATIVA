@@ -8,7 +8,7 @@ rESP0=readmatrix("Telescopio completo\Datos\coordenadasESP.txt"); %[Coordenadas 
 v=readmatrix("Telescopio completo\Datos\verticesESPvertical.txt"); % Vertices para dibujar el segmento [xi;yi;zi]
 
 %Definimos el tiempo total de simulación.
-tfin=60*30; %Segundo final de la simulación.
+tfin=60*45; %Segundo final de la simulación.
 PIDstep=1/100; %Periodo de tiempo entre ejecuciones del PID
 tiempo=0:PIDstep:tfin; %Tiempos en los que se calculan los PID
 
