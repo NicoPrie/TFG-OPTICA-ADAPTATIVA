@@ -1,0 +1,1 @@
+dibESPEJO(tiempo,AltAzESP, AltAzSol, AltAzSEG,AltAzSEGobj,Pint,vel=1,fps=25, trayectoria=true)

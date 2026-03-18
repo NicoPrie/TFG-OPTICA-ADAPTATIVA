@@ -30,7 +30,8 @@ clear N
 %Datos de la planta + PID:
 PIDDataAz=[0,0,0,0,0,0]; %Inicializacion del objeto PID Azimutal [angREF,Kp,Ki,Kd,last_error,integral]
 PIDDataAlt=[0,0,0,0,0,0]; %Inicializacion del objeto PID Altitud
-nu_fun= @(t) (0+0.8*sin(0.9*t)+0.9+sin(0.5*t)+0.3*sin(0.7*t))*10^2; %Ruido (Viento)
+nu_fun= @(t) (0+0.8*sind(0.9*t)+0.9+sind(0.5*t)+0.3*sind(0.7*t))*10^2; %Ruido (Viento)
+%nu_fun= @(t) (0+0.8*sin(0.9*t)+0.9+sin(0.5*t)+0.3*sin(0.7*t))*10^2; %Ruido (Viento)
 
 %Definición de las constantes de la planta.
 if planta=="compl"
@@ -43,11 +44,11 @@ elseif planta=="seg"
     J=.5;
     D=0.1;
     K=0;
-    anglimAlt=[-90,90];
+    anglimAlt=[-45,45];
     anglimAz=[-360,360];
 end
 
-paso_progreso = round(length(tiempo) / 10); % Calcula el número de pasos para un 10%
+%paso_progreso = round(length(tiempo) / 10); % Calcula el número de pasos para un 10%
 for i=1:length(tiempo)
 
     %Cálculo del torque en el ángulo altitud.
