@@ -8,7 +8,7 @@ rESP0=readmatrix("Telescopio completo\Datos\coordenadasESP.txt"); %[Coordenadas 
 v=readmatrix("Telescopio completo\Datos\verticesESPvertical.txt"); % Vertices para dibujar el segmento [xi;yi;zi]
 
 %Definimos el tiempo total de simulación.
-tfin=60*45; %Segundo final de la simulación.
+tfin=60*60*8; %Segundo final de la simulación.
 PIDstep=1/100; %Periodo de tiempo entre ejecuciones del PID
 tiempo=0:PIDstep:tfin; %Tiempos en los que se calculan los PID
 
@@ -22,7 +22,7 @@ end
 
 %Calculamos primero las posiciones del ESPEJO COMPLETO para cada instante
 %de tiempo. Guardamos las posiciones angulares para cada paso de tiempo.
-[~, AltAzESP]=SimPID(tiempo,AltAzSol,"viento",false);
+[~, AltAzESP]=SimPID(tiempo,AltAzSol,"viento",true);
 disp("Posiciones del telecopio calculadas.")
 %disp(size(t))
 %disp(size(AltAzESP))
@@ -79,8 +79,21 @@ for i=1:length(tiempo)
 end
 Pint=permute(Pint,[3 2 1]);
 tEND=toc(tstart);
+
+if tEND<60
+    fprintf('Tiempo total de simulación: %.0f s\n',tEND)
+    disp('')
+elseif tEND>60 && tEND<3600
+    fprintf('Tiempo total de simulación: %.0f m %.0f s\n',tEND/60, mod(tEND,60))
+    disp('')
+else
+    fprintf('Tiempo total de simulación: %.0f h %.0f m %.0f s\n',tEND/3600, mod(tEND,3600)/60, mod(mod(tEND,3600),60))
+    disp('')
+end
 %%
-dibESPEJO( tiempo,AltAzESP, AltAzSol, AltAzSEG,AltAzSEGobj,Pint,vel=60,fps=20, trayectoria=true)
+writematrix(Pint, "Telescopio completo\Datos\sim8horas\Pint")
+%%
+dibESPEJO( tiempo,AltAzESP, AltAzSol, AltAzSEG,AltAzSEGobj,Pint,vel=60*2,fps=15, trayectoria=true, rESP0=rESP0)
 %%
 %Dibujamos la evolución del ESPEJO COMPLETO y SEGMENTOS.
 % figure

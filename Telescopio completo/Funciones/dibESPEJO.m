@@ -48,7 +48,8 @@ sgtitle({'Main Title','Subtitle'})
 
 ThDtile=nexttile(tiles,[1,1]); %Tile en 3D con la animación del ESPEJO COMPLETO.
     plot3(0,0,0); hold on; axis equal; grid on
-    xlim(ThDtile,[-1.5,1.5]); ylim(ThDtile,[-1.5,1.5]); zlim(ThDtile,[-1.5,1.5]);
+    l=5.5;
+    xlim(ThDtile,[-l,l]); ylim(ThDtile,[-l,l]); zlim(ThDtile,[-l,l]);
     xlabel("x"); ylabel("y"); zlabel("z")
     camproj("perspective")
     
