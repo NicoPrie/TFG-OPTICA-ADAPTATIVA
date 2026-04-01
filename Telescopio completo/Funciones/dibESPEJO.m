@@ -12,6 +12,7 @@ arguments (Input)
     opciones.fps=60
     opciones.vel=1
     opciones.trayectoria=false
+    opciones.record=false
 end
 
 rESP0=opciones.rESP0;
@@ -41,14 +42,23 @@ AltAzSEGobj=interp1(tiempo,AltAzSEGobj,0:1/fps:tiempo(end));
 Pint=interp1(tiempo,Pint(),0:1/fps:tiempo(end));
 tiempo=(0:1/fps:tiempo(end));
 
+if opciones.record
+    nombreArchivo = 'mi_animacion_1.mp4';
+    videoObj = VideoWriter(nombreArchivo, 'MPEG-4'); % Formato MP4
+    videoObj.FrameRate = fps; % Fotogramas por segundo
+    open(videoObj);
 
-figure; 
+    hMAIN=figure('Visible','off');
+else
+    hMAIN=figure;
+end
+
 tiles=tiledlayout(2,3);
 sgtitle({'Main Title','Subtitle'})
 
 ThDtile=nexttile(tiles,[1,1]); %Tile en 3D con la animación del ESPEJO COMPLETO.
     plot3(0,0,0); hold on; axis equal; grid on
-    l=5.5;
+    l=1.5;
     xlim(ThDtile,[-l,l]); ylim(ThDtile,[-l,l]); zlim(ThDtile,[-l,l]);
     xlabel("x"); ylabel("y"); zlabel("z")
     camproj("perspective")
@@ -61,15 +71,15 @@ ThDtile=nexttile(tiles,[1,1]); %Tile en 3D con la animación del ESPEJO COMPLETO
         end
         clear vi
     end
-    view(-50,20)
+    view(-15,10)
 
 ALTtileSEG=nexttile(tiles,[1,1]);
     hold on; title("Ángulo Altitud Segmentos");
     xlabel("tiempo (s)"); ylabel("Ángulo (º)"); xlim([tiempo(1),tiempo(end)])
 
     for i=1:size(AltAzSEG,3)
-    h = plot(ALTtileSEG,tiempo,AltAzSEGobj(:,1,i),'--');
-    plot(ALTtileSEG,tiempo, AltAzSEG(:,1,i),'Color', h.Color)
+        h = plot(ALTtileSEG,tiempo,AltAzSEGobj(:,1,i),'--');
+        plot(ALTtileSEG,tiempo, AltAzSEG(:,1,i),'Color', h.Color)
     end
     drawnow
     hLINE(1)=plot([tiempo(1),tiempo(1)],ylim,'--k');
@@ -96,8 +106,8 @@ AZtileSEG=nexttile(tiles,[1,1]);
     xlabel("tiempo (s)"); ylabel("Ángulo (º)"); xlim([tiempo(1),tiempo(end)])
 
     for i=1:size(AltAzSEG,3)
-    h = plot(AZtileSEG,tiempo,AltAzSEGobj(:,2,i),'--');
-    plot(AZtileSEG,tiempo, AltAzSEG(:,3,i),'Color', h.Color)
+        h = plot(AZtileSEG,tiempo,AltAzSEGobj(:,2,i),'--');
+        plot(AZtileSEG,tiempo, AltAzSEG(:,3,i),'Color', h.Color)
     end
     drawnow
     hLINE(3)=plot([tiempo(1),tiempo(1)],ylim,'--k');
@@ -140,7 +150,18 @@ for i=1:vel:length(tiempo)
     hLINE(2).XData=[tiempo(i),tiempo(i)];
     hLINE(3).XData=[tiempo(i),tiempo(i)];
     hLINE(4).XData=[tiempo(i),tiempo(i)];
-
-    pause(1/fps)
+    
+    if opciones.record
+        frame=getframe(hMAIN);
+        writeVideo(videoObj, frame);
+    else
+        pause(1/fps)
+    end
 end
+
+if opciones.record
+    close(videoObj);
+    disp("Video guardado")
+end
+
 end

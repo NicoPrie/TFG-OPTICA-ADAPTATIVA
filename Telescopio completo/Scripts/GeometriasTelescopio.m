@@ -1,4 +1,4 @@
-capas=3;
+capas=5;
 draw=true;
 
 rt=2.560/2;%Radio del espejo principal (m): ref. Nordic Optical Telescope (NOT) -> 2.560 m

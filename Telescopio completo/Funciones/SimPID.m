@@ -10,15 +10,17 @@ arguments (Input)
     opciones.planta = "compl" %"compl" -> Telescopio completo. "seg" -> Segmento
     opciones.viento = false
     opciones.limT = 20000000
+    opciones.NCapas = 0
 end
-    AzPV=opciones.AzPV;
-    AltPV=opciones.AltPV;
-    Kp=opciones.Kp;
-    Ki=opciones.Ki;
-    Kd=opciones.Kd;
-    planta=opciones.planta;
-    viento=opciones.viento;
-    limT=opciones.limT;
+    AzPV = opciones.AzPV;
+    AltPV = opciones.AltPV;
+    Kp = opciones.Kp;
+    Ki = opciones.Ki;
+    Kd = opciones.Kd;
+    planta = opciones.planta;
+    viento = opciones.viento;
+    limT = opciones.limT;
+    NCapas = opciones.NCapas;
 
 %Preasignamos memoria para las soluciones
 PIDstep=tiempo(2)-tiempo(1);
@@ -30,20 +32,39 @@ clear N
 %Datos de la planta + PID:
 PIDDataAz=[0,0,0,0,0,0]; %Inicializacion del objeto PID Azimutal [angREF,Kp,Ki,Kd,last_error,integral]
 PIDDataAlt=[0,0,0,0,0,0]; %Inicializacion del objeto PID Altitud
-nu_fun= @(t) (0+0.8*sind(0.9*t)+0.9+sind(0.5*t)+0.3*sind(0.7*t))*10^2; %Ruido (Viento)
-%nu_fun= @(t) (0+0.8*sin(0.9*t)+0.9+sin(0.5*t)+0.3*sin(0.7*t))*10^2; %Ruido (Viento)
+nu_fun= @(t) (3+0.8*sind(0.9*t)+0.9+sind(0.5*t)+0.3*sind(0.7*t))*0.0001; %Ruido (Viento)
+%nu_fun= @(t) (3+0.8*sin(0.9*t)+0.9+sin(0.5*t)+0.3*sin(0.7*t))*10^2; %Ruido (Viento)
 
 %Definición de las constantes de la planta.
-if planta=="compl"
-    J=100;
-    D=10;
+if planta == "compl"
+    R=1.28;
+    M=19025;
+    
+    I=[1/4*M*R^2 0 0; 0 1/4*M*R^2 0; 0 0 1/2*M*R^2];
+
+    Jalt=1/4*M*R^2;
+    Jaz=@(tht) I(2,2)*cosd(tht)^2 + I(3,3)*sind(tht)^2;
+    D=1000;
     K=0;
+
     anglimAlt=[-180,180];
     anglimAz=[0,360];
-elseif planta=="seg"
-    J=.5;
-    D=0.1;
+
+elseif planta == "seg"
+    assert(NCapas ~= 0, 'Se debe especificar número de segmentos con.');
+
+    R=1.28;
+    M=19025;
+    R=R/(NCapas*2+1);
+    M=M/(3*NCapas*(NCapas+1)+1);
+
+    I=[1/4*M*R^2 0 0; 0 1/4*M*R^2 0; 0 0 1/2*M*R^2];
+
+    Jalt = 1/4*M*R^2;
+    Jaz = @(tht) I(2,2)*cosd(tht)^2 + I(3,3)*sind(tht)^2;
+    D=Jalt/10;
     K=0;
+
     anglimAlt=[-45,45];
     anglimAz=[-360,360];
 end
@@ -65,8 +86,8 @@ for i=1:length(tiempo)
     else
         nu=0;
     end
-    plantaAz=EDOplanta(J,D,K,nu,TAz);
-    plantaAlt=EDOplanta(J,D,K,nu,TAlt);
+    plantaAz=EDOplanta(Jaz(AltPV(1,1)),D,K,nu,TAz);
+    plantaAlt=EDOplanta(Jalt,D,K,nu,TAlt);
     [~,X1]=ode45(plantaAlt, [0,PIDstep],AltPV);
     [~,X2]=ode45(plantaAz, [0,PIDstep], AzPV);
     AltPV=X1(end,:);
