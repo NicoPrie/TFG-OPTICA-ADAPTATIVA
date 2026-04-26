@@ -57,7 +57,9 @@ if planta == "compl"
     K=0;
 
     anglimAlt=[-180,180];
-    anglimAz=[0,360];
+    anglimAz=[-360,360];
+    anglimAlt=[];
+    anglimAz=[];
 
     Kp=Kp*Jalt;
     Ki=Ki*Jalt;
@@ -80,6 +82,8 @@ elseif planta == "seg"
 
     anglimAlt=[-45,45];
     anglimAz=[-360,360];
+    anglimAlt=[];
+    anglimAz=[];
 
     Kp=Kp*Jalt;
     Ki=Ki*Jalt;

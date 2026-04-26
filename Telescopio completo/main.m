@@ -8,7 +8,7 @@ rESP0=readmatrix("Telescopio completo\Datos\coordenadasESP.txt"); %[Coordenadas 
 v=readmatrix("Telescopio completo\Datos\verticesESPvertical.txt"); % Vertices para dibujar el segmento [xi;yi;zi]
 
 %Definimos el tiempo total de simulación.
-tfin=60*60*4; %Segundo final de la simulación.
+tfin=60*5; %Segundo final de la simulación.
 PIDstep=1/100; %Periodo de tiempo entre ejecuciones del PID
 tiempo=0:PIDstep:tfin; %Tiempos en los que se calculan los PID
 
@@ -92,7 +92,7 @@ else
     disp('')
 end
 %%
-dibESPEJO(tiempo, AltAzESP, AltAzSol, AltAzSEG, AltAzSEGobj, Pint, vel=1, fps=30, trayectoria=1, rESP0=rESP0, record=0, view=2)
+dibESPEJO(tiempo, AltAzESP, AltAzSol, AltAzSEG, AltAzSEGobj, Pint, vel=1, fps=30, trayectoria=1, rESP0=rESP0, record=0, view=1)
 %%
 %Dibujamos la evolución del ESPEJO COMPLETO y SEGMENTOS.
 % figure

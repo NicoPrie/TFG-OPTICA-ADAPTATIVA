@@ -141,6 +141,7 @@
 % end
 
 function J = pid_cost(K, n)
+
     if any(K < 0) || any(K > 1000)
         J = 1e6;
         return;
@@ -149,9 +150,7 @@ function J = pid_cost(K, n)
     tfin = 25;
     dt = 1/100;
     t = 0:dt:tfin;
-    [~, AltAzESP] = SimPID(t, ones(length(t),2), "viento", false, ...
-        "Kp", K(1), "Ki", K(2), "Kd", K(3), ...
-        "planta", "seg", "NCapas", n);
+    [~, AltAzESP] = SimPID(t, ones(length(t),2), "viento", false, "Kp", K(1), "Ki", K(2), "Kd", K(3), "planta", "seg", "NCapas", n);
     y = AltAzESP(:,1)';
 
     % Error
@@ -164,7 +163,7 @@ function J = pid_cost(K, n)
     % Overshoot
     overshoot = max(0, max(y) - 1);
 
-    % Settling time
+    % Cuanto tarda en llegar a la posicion objetivo y equilibrarse
     idx = find(abs(e) > 0.02, 1, 'last');
     if isempty(idx)
         settling_time = 0;
@@ -181,20 +180,17 @@ function J = pid_cost(K, n)
     overshoot_multiplier = 1 + 100 * overshoot;
     overshoot_penalty    = 1000 * overshoot^2;
 
-    % Steady-state: last 20% window
+    % Error en el último 20% de la simulcaión 
     ss_idx = round(0.8 * length(t)):length(t);
     steady_state_bias  = abs(mean(e(ss_idx)));
     steady_state_noise = mean(e(ss_idx).^2);
 
-    % Terminal penalty: last 1% of samples only
-    % This is the sharpest possible pressure on final value
+    % Error en el último 1% de la simulación
+    % Ejerceremos más castigo si justo al final no hemos llegado al
+    % objetivo.
     term_idx = round(0.99 * length(t)):length(t);
     terminal_penalty = abs(mean(e(term_idx)));
 
-    % Final cost
-    J = (itae + settling_time + overshoot_penalty ...
-         + 50000  * steady_state_bias  ...
-         + 500    * steady_state_noise ...
-         + 900000 * terminal_penalty) ...        % sharpest pressure: last ~0.25s
-        * overshoot_multiplier;
+    % Coste final ponderado
+    J = (itae + settling_time + overshoot_penalty + 50000  * steady_state_bias + 500    * steady_state_noise + 900000 * terminal_penalty) * overshoot_multiplier;
 end

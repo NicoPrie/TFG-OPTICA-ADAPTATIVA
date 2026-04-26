@@ -105,7 +105,9 @@ if opciones.view == 1
         hFOC=plot(intPLfocal,squeeze(Pint(1,1,:)),squeeze(Pint(1,3,:)),'.r');
         xlabel("X (m)"); ylabel("Y (m)");
         axis equal; grid on
-        lim=.0025;
+        %lim=.0025;
+        %lim=0.005;
+        lim=0.5;
         title("Intersecciones con el plano focal")
         xlim([-lim,lim]);ylim([-lim,lim])
     
@@ -121,7 +123,7 @@ if opciones.view == 1
         hLINE(3)=plot([tiempo(1),tiempo(1)], ylim,'--k');
     
     AZtileESP=nexttile(tiles,[1,1]);
-        hold on; title("Ángulo Altitud Espejo");
+        hold on; title("Ángulo Acimutal Espejo");
         xlabel("tiempo (s)"); ylabel("Ángulo (º)"); xlim([tiempo(1),tiempo(end)])
     
         h = plot(AZtileESP,tiempo,AltAzESPobj(:,2),'--');
