@@ -6,14 +6,14 @@ rObj=[0,0,3];
 
 %Circulo de espejos en radio r.
 r1=3;
-n1=2;
+n1=6;
 z1=0.2;
 k1=linspace(0,2*pi,n1+1);
 k1(end)=[];
 todos_rEsp=[r1*cos(k1'),r1*sin(k1'),z1*ones(length(k1),1)];
 
 r2=5;
-n2=4;
+n2=6;
 z2=0.2;
 k2=linspace(0,2*pi,n2+1);
 k2(end)=[];

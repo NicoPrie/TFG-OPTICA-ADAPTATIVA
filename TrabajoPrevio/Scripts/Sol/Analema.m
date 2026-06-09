@@ -21,18 +21,23 @@ z = sind(alpha_s_t);
 figure
 plot3(0,0,0,'r*')
 hold on
-plot3(x, y, z,'r')
+plot3(x, y, z,'r',LineWidth=1)
 constantplane([0,0,1],0)
-sphere(FaceColor= 'white', FaceAlpha='0.5')
+sphere(FaceColor= 'white', FaceAlpha='0.5', LineWidth=0.1, LineColor=[1,1,1,0.2])
 
-text(0,1,0,'N')
-text(0,-1,0,'S')
-text(1,0,0,'E')
+text(0,1,0,'N',Color='r')
+text(0,-1.1,0,'S',Color='b')
+text(1.1,0,0,'E')
 text(-1,0,0,'O')
 
-axis equal
+axis('equal', 'off')
 xlim([-1,1])
 ylim([-1,1])
 zlim([-1,1])
 
-grid on
+title({'Analema para el 2026', 'a las 12 UTC desde Madrid'})
+
+grid off
+view(30,15)
+
+exportgraphics(gcf,'C:\Users\priet\OneDrive - Universidad Complutense de Madrid (UCM)\Escritorio\Carrera\4 - Cuarto\TFG\Figuras\Analema12h2026.png','Resolution',300)

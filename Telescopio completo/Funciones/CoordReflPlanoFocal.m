@@ -14,8 +14,10 @@ rSEG=rESP(2:end,:);
 %Cálculo de la intersección en el plano focal
     num = sum((rFOCO - rSEG).*rFOCO/norm(rFOCO),2);
     den = sum(r.*rFOCO/norm(rFOCO),2);
-    
-    t = num ./ den;
-    
+    t   = num ./ den;
+
+    invalid = (t >= 0) | (abs(den) < 1e-10) | (dot_dn <= 0);
+
     Pint = rSEG + t.*r;
+    Pint(invalid, :) = NaN;
 end

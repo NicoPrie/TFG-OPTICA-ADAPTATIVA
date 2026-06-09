@@ -14,3 +14,7 @@ plot(capasl,eficiencial,'k')
 plot(capas,eficiencia, 'or')
 plot([0,lim],[75,75], '--b')
 yticks([0 10 20 30 40 50 60 70 75 80])
+xlabel('Número de segmentos');
+ylabel('Eficiencia espacial (%)');
+title('Eficiencia vs número de segmentos');
+grid on;

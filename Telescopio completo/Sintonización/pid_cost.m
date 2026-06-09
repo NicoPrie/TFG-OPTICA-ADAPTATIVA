@@ -147,7 +147,7 @@ function J = pid_cost(K, n)
         return;
     end
 
-    tfin = 25;
+    tfin = 1;
     dt = 1/100;
     t = 0:dt:tfin;
     [~, AltAzESP] = SimPID(t, ones(length(t),2), "viento", false, "Kp", K(1), "Ki", K(2), "Kd", K(3), "planta", "seg", "NCapas", n);

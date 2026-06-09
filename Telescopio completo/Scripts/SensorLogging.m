@@ -1,6 +1,88 @@
+%ANTES DE CORRER ESTA CELDA APUNTAR TELEFONO AL NORTE PARA CALIBRAR
+%CORRECTAMENTE.
 clear
 clc
 
+m = mobiledev;
+m.OrientationSensorEnabled = 1;
+m.SampleRate=100;
+
+tic
+m.Logging = 1;
+pause(0.5)
+step=1/20;
+t=60;
+to=0;
+
+figure
+az=plot(0, 0);
+
+figure
+alt=plot(0, 0);
+
+figure
+azalt=plot(0,0);
+%xlim([-40,40])
+%ylim([-25,25])
+xlim([-180,180])
+ylim([-90,90])
+
+%figure
+%plot(to, o(:,3))
+
+while to(end) < t
+[o,to] = orientlog(m);
+
+%Azimutal angle
+o(:,1) = unwrap(deg2rad(o(:,1)));
+o(:,1) = rad2deg(o(:,1));
+o(:,1) = o(:,1) + 90;
+
+%Altitude angle
+o(:,2) = -o(:,2);
+%o(:,2) = unwrap(deg2rad(o(:,2)));
+%o(:,2) = rad2deg(o(:,2));
+
+
+az.YData=to;
+az.XData = o(:,1);
+alt.XData = to;
+alt.YData = o(:,2);
+azalt.XData=o(:,1);
+azalt.YData = o(:,2);
+drawnow;
+
+pause(step)
+end
+
+m.Logging = 0;
+
+%%
+%Suavizado de los datos
+[o,to] = orientlog(m);
+figure
+hold on
+o(:,1) = unwrap(deg2rad(o(:,1)));
+o(:,1) = rad2deg(o(:,1));
+o(:,1) = o(:,1) + 90;
+plot(to, o(:,1))
+o(:,1) = smoothdata(o(:,1), 'gaussian', 500);
+%o(:,1) = sgolayfilt(o(:,1), 3, 301); % orden 3, ventana 51 puntos
+%o(:,1) = smoothdata(o(:,1), 'gaussian', 5);
+%o(:,1) = smoothdata(o(:,1), 'movmean', 50);
+plot(to, o(:,1))
+
+figure
+hold on
+o(:,2) = -o(:,2);
+plot(to, o(:,2))
+o(:,2) = smoothdata(o(:,2), 'gaussian', 500);
+%o(:,2) = sgolayfilt(o(:,2), 3, 301);
+%o(:,2) = smoothdata(o(:,2), 'gaussian', 5);
+%o(:,2) = smoothdata(o(:,2), 'movmean', 50);
+plot(to, o(:,2))
+toc
+%%
 tstart=tic;
 
 %PIDs sobre los fragmentos de telescopio.
@@ -8,7 +90,7 @@ rESP0=readmatrix("Telescopio completo\Datos\coordenadasESP.txt"); %[Coordenadas 
 v=readmatrix("Telescopio completo\Datos\verticesESPvertical.txt"); % Vertices para dibujar el segmento [xi;yi;zi]
 
 %Definimos el tiempo total de simulación.
-tfin=60*5; %Segundo final de la simulación.
+tfin=to(end); %Segundo final de la simulación.
 PIDstep=1/100; %Periodo de tiempo entre ejecuciones del PID
 tiempo=0:PIDstep:tfin; %Tiempos en los que se calculan los PID
 
@@ -16,10 +98,8 @@ tiempo=0:PIDstep:tfin; %Tiempos en los que se calculan los PID
 %angulares objetivo para cada instante de tiempo. El ESPEJO COMPLETO trata
 %de observar el objetivo directamente.
 AltAzSol=zeros(length(tiempo),2);
-for i=1:length(tiempo)
-    %[~, AltAzSol(i,:)]=AngFCordT([40.437271,-3.714715],[0,0,0],[0,0,0],[2025, 12, 7+tiempo(i)/(60*60)]);
-    [~, AltAzSol(i,:)]=AngFCordT([40.437271,-3.714715],[0,0,0],[0,0,0],[2026, 93, 7+tiempo(i)/(60*60)]);
-end
+AltAzSol(:,1)=interp1(to,o(:,2),tiempo);
+AltAzSol(:,2)=interp1(to,o(:,1),tiempo);
 
 %Calculamos primero las posiciones del ESPEJO COMPLETO para cada instante
 %de tiempo. Guardamos las posiciones angulares para cada paso de tiempo.
@@ -92,35 +172,4 @@ else
     disp('')
 end
 %%
-dibESPEJO(tiempo, AltAzESP, AltAzSol, AltAzSEG, AltAzSEGobj, Pint, vel=1, fps=30, trayectoria=1, rESP0=rESP0, record=0, view=1)
-%%
-%Dibujamos la evolución del ESPEJO COMPLETO y SEGMENTOS.
-% figure
-% plot(tiempo,AltAzSol)
-% hold on
-% plot(t, [AltAzESP(:,1),AltAzESP(:,3)])
-
-k=1:1:size(AltAzSEGobj,3);
-figure
-
-subplot(2,1,1)
-hold on
-%for i=1:size(AngEspSeg,3)
-for i=k
-h = plot(tiempo,AltAzSEGobj(:,1,i),'--');
-plot(tiempo, AltAzSEG(:,1,i),'Color', h.Color)
-%ylim([-20,20])
-end
-title("Ángulo Altitud")
-
-subplot(2,1,2)
-hold on
-%for i=1:size(AngEspSeg,3)
-for i=k
-h = plot(tiempo,AltAzSEGobj(:,2,i),'--');
-plot(tiempo, AltAzSEG(:,3,i),'Color', h.Color)
-%ylim([-20,20])
-end
-title("Ángulo Acimutal")
-
-toc
+dibESPEJO(tiempo, AltAzESP, AltAzSol, AltAzSEG, AltAzSEGobj, Pint, vel=1, fps=20, trayectoria=1, rESP0=rESP0, record=0, view=1)

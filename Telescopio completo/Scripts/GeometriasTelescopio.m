@@ -1,5 +1,6 @@
 capas=2;
 draw=true;
+s=0;
 
 rt=2.560/2;%Radio del espejo principal (m): ref. Nordic Optical Telescope (NOT) -> 2.560 m
 r=rt/(capas*2+1);%
@@ -17,7 +18,7 @@ end
 rESP0=[zeros(3*capas*(capas+1),3)];
 
 if 3*capas*(capas+1)>2500
-    input("Nº de espejos:" + (3*capas*(capas+1)+1) + ", continuar? ")
+    input("Nº de segmentos:" + (3*capas*(capas+1)+1) + ", continuar? ")
 end
 
 k=linspace(0,2*pi,50);
@@ -36,13 +37,13 @@ if draw
     ylim([-rt*(1+0.2),rt*(1+0.2)])
     zlim([-rt*(1+0.2),rt*(1+0.2)])
 
-    xlabel('x')
-    ylabel('y')
-    zlabel('z')
+    xlabel('x(m)')
+    ylabel('y(m)')
+    zlabel('z(m)')
     patch(v(1,:),v(2,:),v(3,:),[0.8 0.8 0.9])
 
-    title("Nº Capas:" + capas + " Nº Espejos:" + (3*capas*(capas+1)+1))
-    annotation('textbox', [0.77, 0.5, 0.7, 0.1], 'String', {"PARAMETROS DEL ESPEJO","Distancia focal: " + f + "m", "Diametro del espejo: " + rt*2 + "m", "Diametro por segmento:" + rt/(capas*2+1), "Porcentaje de superficie cubierta:" + round(((3*capas*(capas+1)+1)*r^2)/(rt^2)*100,2) + "%"}, 'FitBoxToText', 'on');
+    title("Nº Capas:" + capas + " Nº Segmentos:" + (3*capas*(capas+1)+1))
+    %annotation('textbox', [0.77, 0.5, 0.7, 0.1], 'String', {"PARAMETROS DEL ESPEJO","Distancia focal: " + f + "m", "Diametro del espejo: " + rt*2 + "m", "Diametro por segmento:" + rt/(capas*2+1), "Porcentaje de superficie cubierta:" + round(((3*capas*(capas+1)+1)*r^2)/(rt^2)*100,2) + "%"}, 'FitBoxToText', 'on');
 end
 
 k=0; %Guarda cuantos objetos habia en las capas anteriores
@@ -60,6 +61,10 @@ end
 
 view(0,0)
 rESP0=[0,f,0;0,0,0;rESP0];
+
+if s
+exportgraphics(gca,'C:\Users\priet\OneDrive - Universidad Complutense de Madrid (UCM)\Escritorio\Carrera\4 - Cuarto\TFG\Figuras\Segmentos15.png','Resolution',300)
+end
 
 clearvars -except rESP0 v
 
